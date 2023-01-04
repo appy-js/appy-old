@@ -55,8 +55,8 @@ export class Watcher {
 
       setTimeout(() => {
         this.#isProcessing = false;
-      }, 100);
-    }, 200);
+      }, 250);
+    }, 250);
 
     for await (const event of this.#watcher) {
       if (this.#isProcessing) {
