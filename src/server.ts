@@ -23,6 +23,10 @@ export class Server {
    */
   #router: Router;
 
+  get router() {
+    return this.#router;
+  }
+
   /**
    * The Vite dev server process.
    */
