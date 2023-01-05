@@ -41,6 +41,7 @@ export class Server {
           "deno",
           "run",
           "-A",
+          "--unstable",
           "npm:vite@^3.2.5",
         ],
         stdout: "inherit",
