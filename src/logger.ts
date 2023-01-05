@@ -1,5 +1,5 @@
 import { getLogger as getDenoLogger, handlers, setup } from "std/log/mod.ts";
-import App from "./app.ts";
+import { App } from "./app.ts";
 import { has, set } from "./utils.ts";
 
 export async function getLogger(app: App) {
@@ -20,7 +20,7 @@ export async function getLogger(app: App) {
             logRecord.args.map((arg: unknown) => {
               const newArg = { ...{}, ...arg as Record<string, unknown> };
 
-              app.config.logger.redact.paths?.forEach((p) => {
+              app.config.logger.redact.paths?.forEach((p: string) => {
                 if (has(newArg as Record<string, unknown>, p)) {
                   set(
                     newArg as Record<string, unknown>,

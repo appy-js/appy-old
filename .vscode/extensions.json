@@ -7,7 +7,6 @@
     "editorconfig.editorconfig",
     "jnoortheen.nix-ide",
     "redhat.vscode-yaml",
-    "svelte.svelte-vscode",
     "vscode-icons-team.vscode-icons"
   ]
 }

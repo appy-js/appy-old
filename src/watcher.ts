@@ -1,15 +1,25 @@
 import { extname } from "std/path/mod.ts";
 import { debounce } from "std/async/debounce.ts";
-import App from "./app.ts";
+import { App } from "./app.ts";
 import { formatPug } from "./dev.ts";
 
+/**
+ * The watcher that provides all the DX goodies.
+ */
 export class Watcher {
+  /**
+   * The app's instance.
+   */
   #app!: App;
 
+  /**
+   * Indicate if the processing is happening.
+   */
   #isProcessing!: boolean;
 
-  #processingFiles!: string[];
-
+  /**
+   * The FS watcher.
+   */
   #watcher!: Deno.FsWatcher;
 
   constructor(app: App) {
@@ -23,31 +33,11 @@ export class Watcher {
     });
 
     const process = debounce(async (e: Deno.FsEvent) => {
-      const { kind, paths } = e;
-      let op = "";
-
-      switch (kind) {
-        case "create":
-        case "remove":
-          op = `${kind}d`;
-          break;
-
-        case "modify":
-          op = "modified";
-          break;
-      }
-
       await Promise.all(
-        await paths.map(async (path) => {
-          if (op) {
-            this.#app.logger.info(
-              `File ${op}: ${path.replace(`${Deno.cwd()}/`, "")}`,
-            );
-          }
-
+        await e.paths.map(async (path) => {
           switch (extname(path)) {
             case ".pug":
-              await formatPug(this.#app, path);
+              await formatPug(path);
               break;
           }
         }),
@@ -55,7 +45,7 @@ export class Watcher {
 
       setTimeout(() => {
         this.#isProcessing = false;
-      }, 250);
+      }, 150);
     }, 250);
 
     for await (const event of this.#watcher) {
@@ -66,6 +56,10 @@ export class Watcher {
       this.#isProcessing = true;
       process(event);
     }
+  }
+
+  stop() {
+    this.#watcher?.close();
   }
 }
 
