@@ -1,6 +1,8 @@
 import { serve } from "std/http/server.ts";
-import { Hono } from "hono";
+import { Hono as Router } from "https://deno.land/x/hono@v3.0.0-rc.3/mod.ts";
 import { App } from "./app.ts";
+
+export { Router };
 
 /**
  * The server that serves all the HTTP requests.
@@ -19,7 +21,7 @@ export class Server {
   /**
    * The router instance.
    */
-  #router: Hono;
+  #router: Router;
 
   /**
    * The Vite dev server process.
@@ -29,7 +31,7 @@ export class Server {
   constructor(app: App) {
     this.#abortController = new AbortController();
     this.#app = app;
-    this.#router = new Hono();
+    this.#router = new Router();
   }
 
   async start() {
