@@ -1,10 +1,11 @@
 import { Logger } from "std/log/logger.ts";
 import { basename } from "std/path/mod.ts";
 import { CAC } from "npm:cac@^6.7.14";
+import { addCommands, getCLI } from "./cli.ts";
 import { Config, getConfig } from "./config.ts";
 import { getLogger } from "./logger.ts";
 import { getServer, Server } from "./server.ts";
-import { addCommands, getCLI } from "./cli.ts";
+import { getWorker, Worker } from "./worker.ts";
 import { getWatcher, Watcher } from "./watcher.ts";
 
 /**
@@ -57,6 +58,15 @@ export class App {
   }
 
   /**
+   * The app's worker.
+   */
+  #worker!: Worker;
+
+  get worker(): Worker {
+    return this.#worker;
+  }
+
+  /**
    * The app's watcher.
    */
   #watcher!: Watcher;
@@ -81,9 +91,16 @@ export class App {
   async init() {
     this.#config = getConfig(this.#name);
     this.#cli = getCLI(this);
-    this.#logger = await getLogger(this);
+    this.#logger = await getLogger(this, Deno.args?.[0] ?? "");
     this.#server = getServer(this);
+    this.#worker = getWorker(this);
     this.#watcher = getWatcher(this);
+
+    globalThis.addEventListener("error", (err) => this.#logger.error(err));
+    globalThis.addEventListener(
+      "unhandledrejection",
+      (err) => this.#logger.error(err),
+    );
   }
 
   /**
@@ -99,6 +116,7 @@ export class App {
    */
   stop() {
     this.#server?.stop();
+    this.#worker?.stop();
     this.#watcher?.stop();
   }
 }

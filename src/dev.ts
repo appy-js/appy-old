@@ -1,6 +1,11 @@
 import prettier from "npm:prettier@^2.8.1";
 import prettierPluginPug from "npm:@prettier/plugin-pug@^2.3.0";
 
+/**
+ * Format the Pug file using Prettier + Prettier Pug plugin.
+ *
+ * @param path The pug file path.
+ */
 export async function formatPug(path: string) {
   const decoder = new TextDecoder("utf-8");
   const formattedCode = prettier.format(
