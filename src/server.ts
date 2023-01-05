@@ -1,4 +1,5 @@
 import { serve } from "std/http/server.ts";
+import { Hono } from "hono";
 import { App } from "./app.ts";
 
 /**
@@ -8,7 +9,7 @@ export class Server {
   /**
    * The server's abort controller.
    */
-  #ac: AbortController;
+  #abortController: AbortController;
 
   /**
    * The app instance.
@@ -16,13 +17,19 @@ export class Server {
   #app: App;
 
   /**
+   * The router instance.
+   */
+  #router: Hono;
+
+  /**
    * The Vite dev server process.
    */
   #vite!: Deno.Process;
 
   constructor(app: App) {
-    this.#ac = new AbortController();
+    this.#abortController = new AbortController();
     this.#app = app;
+    this.#router = new Hono();
   }
 
   async start() {
@@ -39,17 +46,10 @@ export class Server {
       });
     }
 
-    await serve(async (_request: Request) => {
-      const { default: handler } = await import(
-        `${Deno.cwd()}/${this.#app.config.appDirectory}/routes/index.ts`
-      );
-      await handler();
-
-      return new Response(null, { status: 200 });
-    }, {
+    await serve(this.#router.fetch, {
       hostname: Deno.env.get("HOST") || "localhost",
       port: Number(Deno.env.get("PORT")) || 3000,
-      signal: this.#ac.signal,
+      signal: this.#abortController.signal,
 
       onError: (err) => {
         this.#app.logger.error(err);
@@ -67,7 +67,7 @@ export class Server {
 
   stop() {
     this.#vite?.close();
-    this.#ac.abort();
+    this.#abortController.abort();
   }
 }
 
