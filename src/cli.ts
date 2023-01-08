@@ -1,8 +1,9 @@
 import { cac } from "npm:cac@^6.7.14";
 import { App } from "./app.ts";
+import build from "./commands/build.ts";
 import server from "./commands/server.ts";
-import worker from "./commands/worker.ts";
 import watcher from "./commands/watcher.ts";
+import worker from "./commands/worker.ts";
 
 export function getCLI(app: App) {
   const cli = cac(app.name);
@@ -12,6 +13,7 @@ export function getCLI(app: App) {
 }
 
 export function addCommands() {
+  build();
   server();
   worker();
   watcher();

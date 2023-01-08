@@ -1,7 +1,6 @@
-import { extname } from "std/path/mod.ts";
-import { debounce } from "std/async/debounce.ts";
+import { BuildResult } from "https://deno.land/x/esbuild@v0.16.15/mod.js";
 import { App } from "./app.ts";
-import { formatPug } from "./dev.ts";
+import { getBundler } from "./bundler.ts";
 
 /**
  * The watcher that provides all the DX goodies.
@@ -11,6 +10,15 @@ export class Watcher {
    * The app's instance.
    */
   #app!: App;
+
+  /**
+   * The app's bundler.
+   */
+  #bundler!: BuildResult;
+
+  get bundler() {
+    return this.#bundler;
+  }
 
   /**
    * Indicate if the processing is happening.
@@ -28,25 +36,18 @@ export class Watcher {
   }
 
   async start() {
+    this.#bundler = await getBundler(
+      this.#app,
+      ["", "development"].includes(Deno.env.get("ESBUILD_MODE") ?? ""),
+    );
+
     this.#watcher = Deno.watchFs([this.#app.config.appDirectory], {
       recursive: true,
     });
 
-    const process = debounce(async (e: Deno.FsEvent) => {
-      await Promise.all(
-        await e.paths.map(async (path) => {
-          switch (extname(path)) {
-            case ".pug":
-              await formatPug(path);
-              break;
-          }
-        }),
-      );
-
-      setTimeout(() => {
-        this.#isProcessing = false;
-      }, 150);
-    }, 250);
+    const process = (_e: Deno.FsEvent) => {
+      this.#isProcessing = false;
+    };
 
     for await (const event of this.#watcher) {
       if (this.#isProcessing) {
@@ -59,6 +60,7 @@ export class Watcher {
   }
 
   stop() {
+    this.#bundler?.stop?.();
     this.#watcher?.close();
   }
 }

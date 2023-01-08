@@ -35,7 +35,7 @@ export interface UserConfig {
  */
 export class Config {
   /**
-   * The app's directory.
+   * The app's src directory.
    */
   #appDirectory!: string;
 
@@ -70,14 +70,24 @@ export class Config {
     return this.#name;
   }
 
+  /**
+   * The app's output directory.
+   */
+  #outDirectory!: string;
+
+  get outDirectory() {
+    return this.#outDirectory;
+  }
+
   constructor(name: string) {
     this.#appDirectory = "app";
+    this.#outDirectory = "dist";
     this.#env = Deno.env.get("APP_ENV") || "development";
     this.#logger = {
       redact: {
         censor: Deno.env.get("LOGGER_REDACT_CENSOR") || "[redacted]",
         paths: Deno.env.get("LOGGER_REDACT_PATHS")?.split(",") || [],
-        remove: Boolean(Deno.env.get("LOGGER_REDACT_REMOVE")) || false,
+        remove: Boolean(Deno.env.get("LOGGER_REDACT_REMOVE")),
       },
     };
     this.#name = name;

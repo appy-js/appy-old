@@ -1,8 +1,7 @@
 {
   "nixEnvSelector.nixFile": "${workspaceRoot}/shell.nix",
-  "deno.codeLens.test": true,
   "deno.enable": true,
-  "deno.importMap": ".vscode/import_map.json",
+  "deno.importMap": "import_map.json",
   "deno.lint": true,
   "deno.unstable": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
@@ -10,13 +9,6 @@
   "files.watcherExclude": {
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
-    "**/node_modules/*/**": true,
     "**/.hg/store/**": true
-  },
-  "git.ignoreLimitWarning": true,
-  "search.exclude": {
-    "**/node_modules": true,
-    "**/bower_components": true,
-    "**/*.code-search": true
   }
 }
