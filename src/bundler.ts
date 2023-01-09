@@ -23,7 +23,11 @@ export async function getBundler(app: App, isDev = true) {
     entryNames: `[dir]/[name]${isDev ? "" : "-[hash]"}`,
     format: "esm",
     loader: {
+      ".ico": "file",
+      ".jpg": "file",
+      ".jpeg": "file",
       ".png": "file",
+      ".svg": "file",
     },
     metafile: true,
     minify: !isDev,
