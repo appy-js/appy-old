@@ -10,9 +10,7 @@ mkShell {
   buildInputs = [
     deno
     gnupg
-    mysql
     postgresql
-    sqlite
   ];
 
   shellHook =

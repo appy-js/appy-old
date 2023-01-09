@@ -1,7 +1,6 @@
 import * as esbuild from "https://deno.land/x/esbuild@v0.16.15/mod.js";
 import sveltePluginImport from "npm:esbuild-svelte@^0.7.3";
 import sveltePreprocessImport from "npm:svelte-preprocess@^5.0.0";
-import "npm:svelte@^3.55.0";
 import "npm:typescript@^4.9.4";
 import { App } from "./mod.ts";
 
@@ -18,16 +17,35 @@ export async function getBundler(app: App, isDev = true) {
   }
 
   const res = await esbuild.build({
+    assetNames: `[dir]/[name]${isDev ? "" : "-[hash]"}`,
     bundle: true,
     entryPoints: ["app/routes/index.svelte"],
     entryNames: `[dir]/[name]${isDev ? "" : "-[hash]"}`,
     format: "esm",
+    loader: {
+      ".png": "file",
+    },
     metafile: true,
     minify: !isDev,
     outbase: app.config.appDirectory,
     outdir: app.config.outDirectory,
     platform: "neutral",
     plugins: [
+      {
+        name: "resolve-svelte",
+        setup(b) {
+          b.onResolve({ filter: /^svelte$|^svelte\// }, (args) => {
+            return {
+              path: [
+                Deno.cwd(),
+                "node_modules",
+                args.path,
+                "index.mjs",
+              ].join("/"),
+            };
+          });
+        },
+      },
       sveltePlugin({
         compilerOptions: {
           css: false,
@@ -58,19 +76,27 @@ export async function getBundler(app: App, isDev = true) {
 
 async function writeManifest(app: App, res: esbuild.BuildResult) {
   if (res?.metafile) {
-    const manifest: Record<string, { css: string | undefined; js: string }> =
-      {};
+    const manifest: Record<
+      string,
+      { css: string | undefined; js: string } | string
+    > = {};
+    const inputs = res?.metafile?.inputs;
+    const outputs = res?.metafile?.outputs;
 
-    Object.keys(res?.metafile?.outputs).map((o) => {
-      const entryPoint = res?.metafile?.outputs?.[o]?.entryPoint;
+    Object.keys(outputs).map((outputKey) => {
       if (
-        entryPoint?.startsWith(`${app.config.appDirectory}/`) &&
-        res.metafile?.inputs?.[entryPoint]
+        outputs[outputKey].entryPoint?.startsWith(`${app.config.appDirectory}/`)
       ) {
-        manifest[entryPoint] = {
-          css: res.metafile?.outputs?.[o]?.cssBundle,
-          js: o,
+        manifest[outputs[outputKey].entryPoint as string] = {
+          css: res.metafile?.outputs?.[outputKey]?.cssBundle,
+          js: outputKey,
         };
+      } else if (outputs[outputKey].inputs) {
+        const key = Object.keys(outputs[outputKey].inputs)?.[0];
+
+        if (key?.startsWith(`${app.config.appDirectory}/`) && inputs[key]) {
+          manifest[key] = outputKey;
+        }
       }
     });
 
