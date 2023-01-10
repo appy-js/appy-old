@@ -1,13 +1,5 @@
-import * as esbuild from "https://deno.land/x/esbuild@v0.16.15/mod.js";
-import sveltePluginImport from "npm:esbuild-svelte@^0.7.3";
-import sveltePreprocessImport from "npm:svelte-preprocess@^5.0.0";
-import "npm:typescript@^4.9.4";
+import { esbuild, esbuildSveltePlugin, sveltePreprocess } from "./dev_deps.ts";
 import { App } from "./mod.ts";
-
-const sveltePlugin =
-  (sveltePluginImport as unknown as typeof sveltePluginImport.default);
-const sveltePreprocess =
-  (sveltePreprocessImport as unknown as typeof sveltePreprocessImport.default);
 
 export async function getBundler(app: App, isDev = true) {
   try {
@@ -50,7 +42,7 @@ export async function getBundler(app: App, isDev = true) {
           });
         },
       },
-      sveltePlugin({
+      esbuildSveltePlugin({
         compilerOptions: {
           css: false,
           hydratable: true,

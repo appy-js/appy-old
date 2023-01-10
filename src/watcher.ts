@@ -1,4 +1,4 @@
-import { BuildResult } from "https://deno.land/x/esbuild@v0.16.15/mod.js";
+import { esbuild } from "./dev_deps.ts";
 import { App } from "./app.ts";
 import { getBundler } from "./bundler.ts";
 
@@ -14,7 +14,7 @@ export class Watcher {
   /**
    * The app's bundler.
    */
-  #bundler!: BuildResult;
+  #bundler!: esbuild.BuildResult;
 
   get bundler() {
     return this.#bundler;

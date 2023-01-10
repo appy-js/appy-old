@@ -1,7 +1,7 @@
 {
   "nixEnvSelector.nixFile": "${workspaceRoot}/shell.nix",
   "deno.enable": true,
-  "deno.importMap": "import_map.json",
+  "deno.importMap": "./example/import_map.jsonc",
   "deno.lint": true,
   "deno.unstable": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
@@ -10,5 +10,8 @@
     "**/.git/objects/**": true,
     "**/.git/subtree-cache/**": true,
     "**/.hg/store/**": true
+  },
+  "[svelte]": {
+    "editor.defaultFormatter": "svelte.svelte-vscode"
   }
 }

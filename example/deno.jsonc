@@ -1,0 +1,13 @@
+{
+  "importMap": "import_map.jsonc",
+  "lint": {
+    "files": {
+      "exclude": ["dist", "node_modules"]
+    }
+  },
+  "tasks": {
+    "build": "deno run -A --unstable --node-modules-dir main.ts build",
+    "dev": "deno run -A --unstable main.ts watcher & deno run -A --unstable --node-modules-dir --watch=app/,main.ts main.ts server",
+    "start": "deno run -A --unstable --node-modules-dir main.ts server"
+  }
+}

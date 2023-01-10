@@ -1,6 +1,6 @@
 import { Logger } from "std/log/logger.ts";
 import { basename } from "std/path/mod.ts";
-import { CAC } from "npm:cac@^6.7.14";
+import { CAC } from "./deps.ts";
 import { addCommands, getCLI } from "./cli.ts";
 import { Config, getConfig } from "./config.ts";
 import { getLogger } from "./logger.ts";

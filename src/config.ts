@@ -44,6 +44,19 @@ export class Config {
   }
 
   /**
+   * The Deno's cache directory.
+   */
+  #denoNpmCacheDirectory!: string;
+
+  set denoNpmCacheDirectory(dir: string) {
+    this.#denoNpmCacheDirectory = dir;
+  }
+
+  get denoNpmCacheDirectory() {
+    return this.#denoNpmCacheDirectory;
+  }
+
+  /**
    * The app's environment.
    */
   #env!: "development" | "staging" | "production" | string;
@@ -95,5 +108,7 @@ export class Config {
 }
 
 export function getConfig(name: string) {
-  return new Config(name);
+  const config = new Config(name);
+
+  return config;
 }

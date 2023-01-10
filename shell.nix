@@ -17,5 +17,9 @@ mkShell {
     ''
       # Setup the terminal prompt.
       export PS1="(nix-shell) \W $ "
+
+      example() {
+        (cd example && deno task $@)
+      }
     '';
 }

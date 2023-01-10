@@ -1,0 +1,10 @@
+{
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "paths": {
+      "$app/*": ["app/*"]
+    },
+    "typeRoots": ["node_modules/@types", "app/types"]
+  }
+}
