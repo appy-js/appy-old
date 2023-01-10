@@ -1,5 +1,6 @@
 {
   "nixEnvSelector.nixFile": "${workspaceRoot}/shell.nix",
+  "deno.config": "./example/deno.jsonc",
   "deno.enable": true,
   "deno.importMap": "./example/import_map.jsonc",
   "deno.lint": true,
