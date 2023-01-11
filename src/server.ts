@@ -95,6 +95,8 @@ export class Server {
     this.#htmlTpl = await Deno.readTextFile(
       `${this.#app.config.appDirectory}/index.html`,
     );
+
+    // Setup middleware.
     this.#router.use("*", logger((out) => this.#app.logger.info(out)));
 
     for await (
