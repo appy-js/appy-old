@@ -1,18 +1,12 @@
 import { esbuild, esbuildSveltePlugin, sveltePreprocess } from "./dev_deps.ts";
 import { App } from "./mod.ts";
 
-export async function getBundler(app: App, isDev = true) {
-  try {
-    await Deno.remove(app.config.outDirectory, { recursive: true });
-  } catch (_err) {
-    await Deno.mkdir(app.config.outDirectory);
-  }
-
+export async function getBundler(app: App, isSSR = false, isDev = true) {
   const res = await esbuild.build({
     assetNames: `[dir]/[name]${isDev ? "" : "-[hash]"}`,
     bundle: true,
-    entryPoints: ["app/routes/index.svelte"],
-    entryNames: `[dir]/[name]${isDev ? "" : "-[hash]"}`,
+    entryPoints: app.server.entryPoints,
+    entryNames: `[dir]/[name]${isDev ? "" : "-[hash]"}${isSSR ? ".ssr" : ""}`,
     format: "esm",
     loader: {
       ".ico": "file",
@@ -45,11 +39,13 @@ export async function getBundler(app: App, isDev = true) {
       esbuildSveltePlugin({
         compilerOptions: {
           css: false,
+          generate: isSSR ? "ssr" : "dom",
           hydratable: true,
         },
         preprocess: sveltePreprocess(),
       }),
     ],
+    sourcemap: true,
     splitting: true,
     target: ["chrome99", "firefox99", "safari15"],
     treeShaking: true,
@@ -57,7 +53,7 @@ export async function getBundler(app: App, isDev = true) {
       ? {
         onRebuild: async (_error, result) => {
           if (result) {
-            await writeManifest(app, result);
+            await writeManifest(app, result, isSSR);
           }
         },
       }
@@ -65,12 +61,16 @@ export async function getBundler(app: App, isDev = true) {
     write: true,
   });
 
-  await writeManifest(app, res);
+  await writeManifest(app, res, isSSR);
 
   return res;
 }
 
-async function writeManifest(app: App, res: esbuild.BuildResult) {
+async function writeManifest(
+  app: App,
+  res: esbuild.BuildResult,
+  isSSR = false,
+) {
   if (res?.metafile) {
     const manifest: Record<
       string,
@@ -97,7 +97,7 @@ async function writeManifest(app: App, res: esbuild.BuildResult) {
     });
 
     await Deno.writeTextFile(
-      `${app.config.outDirectory}/manifest.json`,
+      `${app.config.outDirectory}/${isSSR ? "ssr-" : ""}manifest.json`,
       JSON.stringify(manifest ?? {}, null, "  "),
       { create: true },
     );

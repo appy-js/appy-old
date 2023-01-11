@@ -12,12 +12,21 @@ export class Watcher {
   #app!: App;
 
   /**
-   * The app's bundler.
+   * The app's client bundler.
    */
-  #bundler!: esbuild.BuildResult;
+  #clientBundler!: esbuild.BuildResult;
 
-  get bundler() {
-    return this.#bundler;
+  get clientBundler() {
+    return this.#clientBundler;
+  }
+
+  /**
+   * The app's server bundler.
+   */
+  #serverBundler!: esbuild.BuildResult;
+
+  get serverBundler() {
+    return this.#serverBundler;
   }
 
   /**
@@ -36,8 +45,21 @@ export class Watcher {
   }
 
   async start() {
-    this.#bundler = await getBundler(
+    try {
+      await Deno.remove(this.#app.config.outDirectory, { recursive: true });
+    } catch (_err) {
+      await Deno.mkdir(this.#app.config.outDirectory);
+    }
+
+    this.#clientBundler = await getBundler(
       this.#app,
+      false,
+      ["", "development"].includes(Deno.env.get("ESBUILD_MODE") ?? ""),
+    );
+
+    this.#serverBundler = await getBundler(
+      this.#app,
+      true,
       ["", "development"].includes(Deno.env.get("ESBUILD_MODE") ?? ""),
     );
 
@@ -60,7 +82,8 @@ export class Watcher {
   }
 
   stop() {
-    this.#bundler?.stop?.();
+    this.#clientBundler?.stop?.();
+    this.#serverBundler?.stop?.();
     this.#watcher?.close();
   }
 }

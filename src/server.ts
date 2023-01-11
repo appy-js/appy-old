@@ -1,5 +1,6 @@
+import { expandGlob } from "std/fs/mod.ts";
 import { serve } from "std/http/server.ts";
-import { Context, Hono } from "https://deno.land/x/hono@v3.0.0-rc.3/mod.ts";
+import { Context, Hono, serveStatic } from "./deps.ts";
 import { App } from "./app.ts";
 
 export { Hono };
@@ -20,6 +21,15 @@ export class Server {
   #app: App;
 
   /**
+   * The app's UI entry points.
+   */
+  #entryPoints!: string[];
+
+  get entryPoints() {
+    return this.#entryPoints;
+  }
+
+  /**
    * The router instance.
    */
   #router: Hono;
@@ -31,10 +41,57 @@ export class Server {
   constructor(app: App) {
     this.#abortController = new AbortController();
     this.#app = app;
+    this.#entryPoints = [];
     this.#router = new Hono();
   }
 
+  async init() {
+    for await (
+      const file of expandGlob(
+        `${this.#app.config.appDirectory}\/routes\/**\/*.{svelte,ts}`,
+      )
+    ) {
+      if (file.isFile && file.name.endsWith(".svelte")) {
+        this.#entryPoints.push(file.path.replace(`${Deno.cwd()}/`, ""));
+      }
+    }
+  }
+
   async start() {
+    // TODO: figure out how to transform the path at ESBuild.
+    this.#router.use(
+      "/:build{(assets|routes)}/*",
+      serveStatic({ root: "./public/build" }),
+    );
+
+    const htmlTpl = await Deno.readTextFile(
+      `${this.#app.config.appDirectory}/index.html`,
+    );
+
+    this.#router.get("/team-members", async (c) => {
+      const routePath = "routes/team-members/index";
+      const { default: app } = await import(
+        `${Deno.cwd()}/${this.#app.config.outDirectory}/${routePath}.ssr.js`
+      );
+
+      const rendered = app.render();
+
+      return c.html(
+        htmlTpl
+          .replace("<!--app-head-->", rendered.head)
+          .replace("<!--app-html-->", rendered.html)
+          .replace(
+            "<!--app-client-entry-->",
+            `<script type="module">import App from "/build/${routePath}.js";\nnew App({ target: document.getElementById('app'), hydrate: true });</script>`,
+          ),
+      );
+    });
+
+    this.#router.use(
+      "/*",
+      serveStatic({ root: "./public" }),
+    );
+
     await serve(this.#router.fetch, {
       hostname: Deno.env.get("HOST") || "localhost",
       port: Number(Deno.env.get("PORT")) || 3000,
@@ -59,6 +116,9 @@ export class Server {
   }
 }
 
-export function getServer(app: App) {
-  return new Server(app);
+export async function getServer(app: App) {
+  const server = new Server(app);
+  await server.init();
+
+  return server;
 }

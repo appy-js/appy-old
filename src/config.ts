@@ -94,7 +94,7 @@ export class Config {
 
   constructor(name: string) {
     this.#appDirectory = "app";
-    this.#outDirectory = "dist";
+    this.#outDirectory = "public/build";
     this.#env = Deno.env.get("APP_ENV") || "development";
     this.#logger = {
       redact: {

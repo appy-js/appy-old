@@ -92,7 +92,7 @@ export class App {
     this.#config = getConfig(this.#name);
     this.#cli = getCLI(this);
     this.#logger = await getLogger(this, Deno.args?.[0] ?? "");
-    this.#server = getServer(this);
+    this.#server = await getServer(this);
     this.#worker = getWorker(this);
     this.#watcher = getWatcher(this);
 

@@ -2,7 +2,7 @@
   "importMap": "import_map.jsonc",
   "lint": {
     "files": {
-      "exclude": ["dist", "node_modules"]
+      "exclude": ["public/build", "node_modules"]
     }
   },
   "tasks": {
