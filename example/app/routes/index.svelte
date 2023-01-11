@@ -1,15 +1,13 @@
 <script lang="ts">
   import Button from "$app/components/Button.svelte";
   import logo from "$app/assets/logo.png";
-
-  const a: string = null;
 </script>
 
 <svelte:head>
   <title>Home</title>
 </svelte:head>
 
-<Button>{a}</Button>
+<Button>Home</Button>
 <img src={logo} alt="Logo" />
 
 <style>

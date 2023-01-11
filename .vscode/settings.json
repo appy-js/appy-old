@@ -12,6 +12,9 @@
     "**/.git/subtree-cache/**": true,
     "**/.hg/store/**": true
   },
+  "[html]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
   "[svelte]": {
     "editor.defaultFormatter": "svelte.svelte-vscode"
   }

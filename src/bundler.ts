@@ -1,12 +1,15 @@
 import { esbuild, esbuildSveltePlugin, sveltePreprocess } from "./dev_deps.ts";
 import { App } from "./mod.ts";
 
+export const MANIFEST = "manifest.json";
+export const MANIFEST_SSR = "manifest-ssr.json";
+
 export async function getBundler(app: App, isSSR = false, isDev = true) {
   const res = await esbuild.build({
-    assetNames: `[dir]/[name]${isDev ? "" : "-[hash]"}`,
+    assetNames: "[dir]/[name]-[hash]",
     bundle: true,
     entryPoints: app.server.entryPoints,
-    entryNames: `[dir]/[name]${isDev ? "" : "-[hash]"}${isSSR ? ".ssr" : ""}`,
+    entryNames: `[dir]/[name]-[hash]${isSSR ? ".ssr" : ""}`,
     format: "esm",
     loader: {
       ".ico": "file",
@@ -19,7 +22,7 @@ export async function getBundler(app: App, isSSR = false, isDev = true) {
     minify: !isDev,
     outbase: app.config.appDirectory,
     outdir: app.config.outDirectory,
-    platform: "neutral",
+    platform: isSSR ? "neutral" : "browser",
     plugins: [
       {
         name: "resolve-svelte",
@@ -45,6 +48,7 @@ export async function getBundler(app: App, isSSR = false, isDev = true) {
         preprocess: sveltePreprocess(),
       }),
     ],
+    publicPath: isSSR ? undefined : "/build",
     sourcemap: true,
     splitting: true,
     target: ["chrome99", "firefox99", "safari15"],
@@ -97,7 +101,7 @@ async function writeManifest(
     });
 
     await Deno.writeTextFile(
-      `${app.config.outDirectory}/${isSSR ? "ssr-" : ""}manifest.json`,
+      `${app.config.outDirectory}/${isSSR ? MANIFEST_SSR : MANIFEST}`,
       JSON.stringify(manifest ?? {}, null, "  "),
       { create: true },
     );

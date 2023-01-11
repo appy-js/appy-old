@@ -10,11 +10,9 @@
 </svelte:head>
 
 <Button on:click={() => console.log("clicked")}>{str}</Button>
-
 <button class="bg:primary" on:click={() => console.log("clicked")}>
   Click me
 </button>
-
 <img src={logo} alt="Logo" />
 
 <style>

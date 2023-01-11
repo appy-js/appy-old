@@ -44,19 +44,6 @@ export class Config {
   }
 
   /**
-   * The Deno's cache directory.
-   */
-  #denoNpmCacheDirectory!: string;
-
-  set denoNpmCacheDirectory(dir: string) {
-    this.#denoNpmCacheDirectory = dir;
-  }
-
-  get denoNpmCacheDirectory() {
-    return this.#denoNpmCacheDirectory;
-  }
-
-  /**
    * The app's environment.
    */
   #env!: "development" | "staging" | "production" | string;
@@ -84,7 +71,7 @@ export class Config {
   }
 
   /**
-   * The app's output directory.
+   * The app's esbuild output directory.
    */
   #outDirectory!: string;
 
@@ -92,9 +79,29 @@ export class Config {
     return this.#outDirectory;
   }
 
+  /**
+   * The app's routes directory.
+   */
+  #routesDirectory!: string;
+
+  get routesDirectory() {
+    return this.#routesDirectory;
+  }
+
+  /**
+   * The app's static folder directory.
+   */
+  #staticDirectory!: string;
+
+  get staticDirectory() {
+    return this.#staticDirectory;
+  }
+
   constructor(name: string) {
     this.#appDirectory = "app";
-    this.#outDirectory = "public/build";
+    this.#routesDirectory = `${this.#appDirectory}/routes`;
+    this.#staticDirectory = "public";
+    this.#outDirectory = `${this.#staticDirectory}/build`;
     this.#env = Deno.env.get("APP_ENV") || "development";
     this.#logger = {
       redact: {

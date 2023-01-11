@@ -88,7 +88,7 @@ export class App {
    * - server
    * - worker
    */
-  async init() {
+  async #init() {
     this.#config = getConfig(this.#name);
     this.#cli = getCLI(this);
     this.#logger = await getLogger(this, Deno.args?.[0] ?? "");
@@ -101,13 +101,15 @@ export class App {
       "unhandledrejection",
       (err) => this.#logger.error(err),
     );
+
+    addCommands();
   }
 
   /**
    * Start the CLI parsing and running the matched command's action.
    */
-  start() {
-    addCommands();
+  async start() {
+    await this.#init();
     this.#cli.parse(["", ""].concat(Deno.args));
   }
 
