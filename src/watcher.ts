@@ -54,13 +54,13 @@ export class Watcher {
     this.#clientBundler = await getBundler(
       this.#app,
       false,
-      ["", "development"].includes(Deno.env.get("ESBUILD_MODE") ?? ""),
+      ["", "development"].includes(Deno.env.get("DEV") ?? ""),
     );
 
     this.#serverBundler = await getBundler(
       this.#app,
       true,
-      ["", "development"].includes(Deno.env.get("ESBUILD_MODE") ?? ""),
+      ["", "development"].includes(Deno.env.get("DEV") ?? ""),
     );
 
     this.#watcher = Deno.watchFs([this.#app.config.appDirectory], {
