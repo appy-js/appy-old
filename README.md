@@ -9,21 +9,26 @@ A fully featured web framework for Deno.
 
 ### Unstable
 
-- CLI builder with built-in commands ready
+- CLI
+  - come with built-in commands, e.g. DB migrate/seed
+  - build your own commands
 - File-system based router with [Svelte](https://svelte.dev/) SSR support
-  - the folder name is the route
+  - intuitive routing, i.e. the folder name is the route
     - index.svelte - the route's UI page (handling `GET` request)
     - index.ts - the route's `ALL/DELETE/HEAD/PATCH/POST/PUT/OPTIONS` request
       handlers
+  - group your route specific logic inside the route folder
 
 ### Planned
 
 - Authentication/Authorization support
+  - database session with cookie
+  - role based access control
 - Graph-relational database with [EdgeDB](https://www.edgedb.com/)
 - Background job processing with [EdgeDB](https://www.edgedb.com/)
 - Remix way of
   [mutating data](https://remix.run/docs/en/v1/pages/philosophy#progressive-enhancement)
-- Ready-to-use Svelte components (will be referencing to
+- Ready-to-use beautiful Svelte components (will be referencing to
   [Mantine](https://mantine.dev/) and [NextUI](https://nextui.org/))
 
 > Notes:
