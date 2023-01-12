@@ -182,7 +182,7 @@ export class Server {
       `${Deno.cwd()}/${
         (this
           .#manifestSSR[
-            `${this.#app.config.routesDirectory}${normalisedRoute}/index.svelte`
+            `${this.#app.config.routesDirectory}${normalisedRoute}/index.${UI_EXT}`
           ] as { css: string; js: string }).js
       }`
     );
@@ -202,7 +202,7 @@ export class Server {
           `<script type="module">\n      import App from "/${
             (this
               .#manifest[
-                `${this.#app.config.routesDirectory}${normalisedRoute}/index.svelte`
+                `${this.#app.config.routesDirectory}${normalisedRoute}/index.${UI_EXT}`
               ] as { css: string; js: string }).js.replace(
                 `${this.#app.config.staticDirectory}/`,
                 "",

@@ -3,6 +3,7 @@
   "deno.config": "./example/deno.jsonc",
   "deno.enable": true,
   "deno.importMap": "./example/import_map.jsonc",
+  "deno.inlayHints.parameterNames.enabled": "none",
   "deno.lint": true,
   "deno.unstable": true,
   "editor.defaultFormatter": "denoland.vscode-deno",
