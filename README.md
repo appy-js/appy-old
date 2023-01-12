@@ -2,6 +2,9 @@
 
 A fully featured web framework for Deno.
 
+> Our goal is to deliver a web framework that provides similar DX like
+> Rails/Django but with performance/observability kept in mind.
+
 ## Features
 
 ### Unstable
