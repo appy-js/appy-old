@@ -61,6 +61,7 @@ $ nix-shell
 - [ESBuild](https://esbuild.github.io/) for providing an extremely fast bundler
 - [Hono](https://honojs.dev/) for providing an extremely powerful and performant
   HTTP router
-- [Remix]
+- [Remix](https://remix.run) for providing an old school yet productive way of
+  delivering app
 - [SvelteJS](https://svelte.dev/) for providing an extremely intuitive approach
   in building UI components/pages
