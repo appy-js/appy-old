@@ -1,8 +1,14 @@
 {
-  "importMap": "import_map.jsonc",
+  "compilerOptions": {
+    "lib": [
+      "deno.window",
+      "dom"
+    ]
+  },
+  "importMap": "./import_map.jsonc",
   "lint": {
     "files": {
-      "exclude": ["public/build", "node_modules"]
+      "exclude": ["node_modules", "public/build"]
     }
   },
   "tasks": {

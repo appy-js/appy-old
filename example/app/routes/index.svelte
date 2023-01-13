@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Button from "$app/components/Button.svelte";
+  import { Button } from "../../../src/ui";
   import logo from "$app/assets/logo.png";
 </script>
 
@@ -7,7 +7,7 @@
   <title>Home</title>
 </svelte:head>
 
-<Button>Home</Button>
+<Button on:click={() => console.log("clicked")}>Home</Button>
 <img src={logo} alt="Logo" />
 
 <style>

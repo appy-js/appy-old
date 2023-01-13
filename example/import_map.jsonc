@@ -1,7 +1,8 @@
 {
   "imports": {
-    "$app/": "./app/",
+    "$app/": "./example/app/",
     "appy": "../src/mod.ts",
+    "appy/ui": "../src/ui/index.ts",
     "std/": "https://deno.land/std@0.170.0/"
   }
 }
